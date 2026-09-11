@@ -42,7 +42,9 @@ public class Login {
 
         // E: clicar no botao "Login"
         driver.findElement(BOTAO_LOGIN).click();
-        
+
+        // Entao: devera ser redirecionado para a pagina inventory.html
+        assertEquals(BASE_URL + "inventory.html", driver.getCurrentUrl());
     }
 
 }
