@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Checkpoint 5 - Login")
 public class Login {
 
+    private WebDriver driver;
     private static final String BASE_URL = "https://www.saucedemo.com/";
     private static final String USUARIO_VALIDO = "standard_user";
     private static final String SENHA_VALIDA = "secret_sauce";
@@ -17,5 +18,14 @@ public class Login {
     private static final By BOTAO_LOGIN = By.tagName("");
     private static final By ICONE_CARRINHO = By.tagName("");
 
+    @BeforeEach
+    void abrirNavegador(){
+        driver = new ChromeDriver();
+    }
+
+    @AfterEach
+    void fecharNavegador(){
+        if (driver != null) driver.quit();
+    }
 
 }
