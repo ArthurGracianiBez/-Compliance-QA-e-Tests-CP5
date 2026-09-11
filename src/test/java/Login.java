@@ -8,5 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Checkpoint 5 - Login")
 public class Login {
 
+    private static final String BASE_URL = "https://www.saucedemo.com/";
+    private static final String USUARIO_VALIDO = "standard_user";
+    private static final String SENHA_VALIDA = "secret_sauce";
+
+    private static final By CAMPO_USUARIO = By.tagName("");
+    private static final By CAMPO_SENHA = By.tagName("");
+    private static final By BOTAO_LOGIN = By.tagName("");
+    private static final By ICONE_CARRINHO = By.tagName("");
+
 
 }
