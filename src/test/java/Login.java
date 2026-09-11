@@ -14,9 +14,9 @@ public class Login {
     private static final String SENHA_VALIDA = "secret_sauce";
 
     private static final By CAMPO_USUARIO = By.id("user-name");
-    private static final By CAMPO_SENHA = By.tagName("password");
-    private static final By BOTAO_LOGIN = By.tagName("login-button");
-    private static final By ICONE_CARRINHO = By.tagName("");
+    private static final By CAMPO_SENHA = By.id("password");
+    private static final By BOTAO_LOGIN = By.id("login-button");
+    private static final By ICONE_CARRINHO = By.id("shopping_cart_container");
 
     @BeforeEach
     void abrirNavegador(){
@@ -45,6 +45,9 @@ public class Login {
 
         // Entao: devera ser redirecionado para a pagina inventory.html
         assertEquals(BASE_URL + "inventory.html", driver.getCurrentUrl());
+
+        // validar se redirecionou para a pagina inventory.html
+        assertTrue(driver.findElement(ICONE_CARRINHO).isDisplayed());
     }
 
 }
