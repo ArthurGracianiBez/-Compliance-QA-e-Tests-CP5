@@ -15,7 +15,7 @@ public class Login {
 
     private static final By CAMPO_USUARIO = By.id("user-name");
     private static final By CAMPO_SENHA = By.tagName("password");
-    private static final By BOTAO_LOGIN = By.tagName("");
+    private static final By BOTAO_LOGIN = By.tagName("login-button");
     private static final By ICONE_CARRINHO = By.tagName("");
 
     @BeforeEach
@@ -39,6 +39,9 @@ public class Login {
         // Quando: inserir dados de usuario e senha validos
         driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
         driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+
+        // E: clicar no botao "Login"
+        driver.findElement(BOTAO_LOGIN).click();
         
     }
 
