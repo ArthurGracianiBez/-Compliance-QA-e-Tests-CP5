@@ -28,4 +28,12 @@ public class Login {
         if (driver != null) driver.quit();
     }
 
+    @Test
+    @DisplayName("CT1 - Login com sucesso")
+    void deveLogarComCredenciaisValidas(){
+        driver.get(BASE_URL);
+        assertEquals(BASE_URL, driver.getCurrentUrl());
+        assertEquals("Swag Labs", driver.getTitle());
+    }
+
 }
