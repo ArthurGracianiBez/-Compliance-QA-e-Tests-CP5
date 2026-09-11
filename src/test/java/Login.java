@@ -36,8 +36,10 @@ public class Login {
         assertEquals(BASE_URL, driver.getCurrentUrl());
         assertEquals("Swag Labs", driver.getTitle());
 
+        // Quando: inserir dados de usuario e senha validos
         driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
         driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+        
     }
 
 }
