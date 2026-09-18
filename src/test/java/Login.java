@@ -80,4 +80,23 @@ public class Login {
         assertTrue(redirecionadoParaLogin || exibiuErroDeAcessoNegado);
         assertTrue(driver.findElements(ICONE_CARRINHO).isEmpty());
     }
+
+    @Test
+    @DisplayName("CT3 - 400 (Erro de syntax)")
+    void deveRejeitarSubmissaoComCampoObrigatorioAusente(){
+        // Dado: que o usuario esta na tela de login
+        driver.get(BASE_URL);
+
+        // Quando: o campo de usuario e enviado vazio (requisicao estruturalmente incompleta)
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+
+        // E: clicar no botao "Login"
+        driver.findElement(BOTAO_LOGIN).click();
+
+        // Entao: o sistema rejeita a chamada antes de qualquer validacao de negocio
+        // e orienta a correcao do formato, permanecendo na tela de login
+        assertTrue(driver.findElement(MENSAGEM_ERRO).isDisplayed());
+        assertEquals("Epic sadface: Username is required", driver.findElement(MENSAGEM_ERRO).getText());
+        assertEquals(BASE_URL, driver.getCurrentUrl());
+    }
 }
