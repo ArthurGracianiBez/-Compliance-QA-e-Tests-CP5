@@ -238,6 +238,23 @@ public class Login {
         assertEquals(BASE_URL, driver.getCurrentUrl(), "O usuário não deve ser autenticado após múltiplas falhas");
     }
 
+    @Test
+    @DisplayName("CT10 - 499 (Cliente desconectou)")
+    void deveValidarAusenciaDePersistenciaAoInterromperAntesDaResposta(){
+        // Dado: que o usuario esta preenchendo o formulario de login
+        driver.get(BASE_URL);
+        driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
 
+        // Quando: o usuario desiste e atualiza a pagina antes de confirmar o login
+        // (equivalente, do ponto de vista do cliente, a encerrar a conexao antes de uma resposta)
+        driver.navigate().refresh();
+
+        // Entao: nao existe nenhuma persistencia protetiva no ambiente avaliado - nem o e-mail
+        // e mantido apos a interrupcao, o que diverge do comportamento esperado pela especificacao
+        // (gap de conformidade a ser registrado)
+        assertEquals("", driver.findElement(CAMPO_USUARIO).getAttribute("value"));
+        assertEquals("", driver.findElement(CAMPO_SENHA).getAttribute("value"));
+    }
 
 }
