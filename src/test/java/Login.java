@@ -64,5 +64,20 @@ public class Login {
         assertTrue(driver.findElement(ICONE_CARRINHO).isDisplayed());
     }
 
+    @Test
+    @DisplayName("CT2 - 302 (Redirecionar)")
+    void deveBloquearAcessoDiretoAPaginaAutenticadaSemSessao(){
+        // Dado: que o usuario nao possui sessao ativa (nao realizou login)
+        driver.get(BASE_URL);
 
+        // Quando: tenta acessar diretamente a URL do painel de acompanhamento (inventory.html)
+        driver.get(BASE_URL + "inventory.html");
+
+        // Entao: e impedido de visualizar o conteudo autenticado
+        boolean redirecionadoParaLogin = driver.getCurrentUrl().equals(BASE_URL);
+        boolean exibiuErroDeAcessoNegado = !driver.findElements(MENSAGEM_ERRO).isEmpty()
+                && driver.findElement(MENSAGEM_ERRO).getText().toLowerCase().contains("logged in");
+        assertTrue(redirecionadoParaLogin || exibiuErroDeAcessoNegado);
+        assertTrue(driver.findElements(ICONE_CARRINHO).isEmpty());
+    }
 }
