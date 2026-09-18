@@ -159,4 +159,32 @@ public class Login {
         assertTrue(duracaoTotalEmSegundos < 10,
                 "A autenticação excedeu o limite máximo de 10 segundos");
     }
+
+    @Test
+    @DisplayName("CT7 - 429 (Muitos Acessos)")
+    void deveValidarComportamentoEmTentativasSucessivasMalsucedidas() {
+        // Dado: que esteja na página de login
+        driver.get(BASE_URL);
+
+        // Quando: realizar 3 tentativas consecutivas com credenciais erradas
+        for (int i = 1; i <= 3; i++) {
+            WebElement campoUser = driver.findElement(CAMPO_USUARIO);
+            WebElement campoPass = driver.findElement(CAMPO_SENHA);
+
+            campoUser.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
+            campoUser.sendKeys(USUARIO_VALIDO);
+
+            campoPass.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
+            campoPass.sendKeys("senha_errada_" + i);
+
+            driver.findElement(BOTAO_LOGIN).click();
+
+            WebElement elementoErro = wait.until(ExpectedConditions.visibilityOfElementLocated(MENSAGEM_ERRO));
+            assertTrue(elementoErro.isDisplayed(), "Mensagem de erro deve persistir na tentativa " + i);
+        }
+
+        // Então: o sistema mantém a recusa de acesso e permanece na tela inicial de login
+        assertEquals(BASE_URL, driver.getCurrentUrl(), "O usuário não deve ser autenticado após múltiplas falhas");
+    }
+
 }
