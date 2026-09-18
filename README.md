@@ -1,6 +1,10 @@
-# Checkpoint 5 - Compliance QA e Tests
+# Checkpoint 5 - Compliance QA e Automação Testes Funcionais
 
 Suíte de testes automatizados de **login**, construída com **Selenium WebDriver** e **JUnit 5**, aplicada à aplicação de demonstração [saucedemo.com](https://www.saucedemo.com/). Os casos de teste (CT) seguem a notação **Gherkin** (Dado/Quando/E/Então) em comentários e foram desenhados a partir de um plano de compliance que mapeia cada cenário a um código de status HTTP de referência (200, 302, 400, 401, 403, 404, 408, 409, 429, 499, 500).
+
+| Nome                    | RM       |
+|-------------------------|----------|
+| Arthur Graciani Bezerra | RM561728 |
 
 ## Tecnologias
 
@@ -47,10 +51,6 @@ mvn test -Dtest=Login
 ## Sobre a estratégia de testes
 
 O `saucedemo.com` é uma aplicação estática de demonstração, sem backend real de autenticação. Por isso, os cenários de CT6 a CT11 não reproduzem literalmente o código HTTP indicado (que dependeria de infraestrutura como gateway, provedor de identidade externo ou API de autenticação, inexistentes no ambiente). Em vez disso, cada teste valida o comportamento real e observável mais próximo da intenção do cenário original — por exemplo, o CT9 (409 - conflito de sessão) não recebe de fato um HTTP 409, mas comprova, de forma real e executável, que a aplicação **não** implementa controle de sessão única, o que é um achado válido de compliance.
-
-| Nome                    | RM       |
-|-------------------------|----------|
-| Arthur Graciani Bezerra | RM561728 |
 
 ## 📸 Evidências de Execução `mvn test -Dtest=Login`
 
