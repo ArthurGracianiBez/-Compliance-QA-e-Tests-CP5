@@ -137,4 +137,26 @@ public class Login {
                 driver.findElement(MENSAGEM_ERRO).getText());
         assertEquals(BASE_URL, driver.getCurrentUrl());
     }
+
+    @Test
+    @DisplayName("CT6 - 408 Validação de timeout do cliente")
+    void deveAutenticarDentroDoLimiteMaximoDeTempo() {
+        // Dado: que esteja na página de login
+        driver.get(BASE_URL);
+
+        // Quando: iniciar o processo de autenticação medindo o tempo de resposta
+        long tempoInicial = System.currentTimeMillis();
+
+        driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+        driver.findElement(BOTAO_LOGIN).click();
+
+        wait.until(ExpectedConditions.urlContains("inventory.html"));
+        long tempoFinal = System.currentTimeMillis();
+        long duracaoTotalEmSegundos = (tempoFinal - tempoInicial) / 1000;
+
+        // Então: o tempo de resposta deve ser inferior a 10 segundos
+        assertTrue(duracaoTotalEmSegundos < 10,
+                "A autenticação excedeu o limite máximo de 10 segundos");
+    }
 }
