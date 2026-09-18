@@ -99,4 +99,42 @@ public class Login {
         assertEquals("Epic sadface: Username is required", driver.findElement(MENSAGEM_ERRO).getText());
         assertEquals(BASE_URL, driver.getCurrentUrl());
     }
+
+    @Test
+    @DisplayName("CT4 - 401 (Nao autenticado)")
+    void deveNegarAcessoComSenhaIncorreta(){
+        // Dado: que o usuario preenche usuario valido e uma senha
+        driver.get(BASE_URL);
+        driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
+
+        // Quando: a senha informada nao confere com a cadastrada
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_INVALIDA);
+        driver.findElement(BOTAO_LOGIN).click();
+
+        // Entao: o sistema nega o acesso e exibe mensagem generica de credenciais invalidas,
+        // sem indicar qual campo especifico esta incorreto
+        assertTrue(driver.findElement(MENSAGEM_ERRO).isDisplayed());
+        assertEquals("Epic sadface: Username and password do not match any user in this service",
+                driver.findElement(MENSAGEM_ERRO).getText());
+        assertEquals(BASE_URL, driver.getCurrentUrl());
+    }
+
+    @Test
+    @DisplayName("CT5 - 403 (Sem permissao)")
+    void deveNegarAcessoDeContaBloqueadaComCredenciaisCorretas(){
+        // Dado: que uma conta esta suspensa por bloqueio administrativo (locked_out_user)
+        driver.get(BASE_URL);
+
+        // Quando: o usuario informa e-mail e senha corretos para essa conta
+        driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_BLOQUEADO);
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+        driver.findElement(BOTAO_LOGIN).click();
+
+        // Entao: o sistema confirma a autenticidade das credenciais mas nega o acesso,
+        // informando que a conta esta bloqueada
+        assertTrue(driver.findElement(MENSAGEM_ERRO).isDisplayed());
+        assertEquals("Epic sadface: Sorry, this user has been locked out.",
+                driver.findElement(MENSAGEM_ERRO).getText());
+        assertEquals(BASE_URL, driver.getCurrentUrl());
+    }
 }
