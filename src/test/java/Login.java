@@ -257,4 +257,25 @@ public class Login {
         assertEquals("", driver.findElement(CAMPO_SENHA).getAttribute("value"));
     }
 
+    @Test
+    @DisplayName("CT11 - 500 (Erro Interno)")
+    void deveManterEstabilidadeComEntradaMalformadaOuExtrema(){
+        // Dado: que o usuario esta na tela de login
+        driver.get(BASE_URL);
+
+        // Quando: envia uma entrada extrema/malformada que poderia provocar uma excecao nao
+        // tratada em um backend real (ex.: falha ao validar o hash da senha)
+        String entradaExtrema = "' OR '1'='1'; DROP TABLE users;--".repeat(50);
+        driver.findElement(CAMPO_USUARIO).sendKeys(entradaExtrema);
+        driver.findElement(CAMPO_SENHA).sendKeys(entradaExtrema);
+        driver.findElement(BOTAO_LOGIN).click();
+
+        // Entao: o sistema permanece estavel, sem travar ou expor detalhes tecnicos internos,
+        // tratando a entrada apenas como credenciais invalidas
+        assertEquals("Swag Labs", driver.getTitle());
+        assertTrue(driver.findElement(MENSAGEM_ERRO).isDisplayed());
+        assertEquals("Epic sadface: Username and password do not match any user in this service",
+                driver.findElement(MENSAGEM_ERRO).getText());
+    }
+
 }
