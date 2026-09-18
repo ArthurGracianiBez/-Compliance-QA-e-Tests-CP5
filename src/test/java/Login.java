@@ -187,4 +187,22 @@ public class Login {
         assertEquals(BASE_URL, driver.getCurrentUrl(), "O usuário não deve ser autenticado após múltiplas falhas");
     }
 
+    @Test
+    @DisplayName("CT8 - 404 (Não encontrado)")
+    void deveRetornarNaoEncontradoParaRotaInexistente() throws Exception {
+        // Dado: que o ambiente e uma aplicacao estatica, cujo servidor so publica a pagina de login como recurso real
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        // Quando: e feita uma requisicao para uma rota que nao existe (equivalente a uma falha de
+        // deploy/configuracao que remove um endpoint da versao publicada)
+        HttpRequest requisicao = HttpRequest.newBuilder(
+                        URI.create(BASE_URL + "rota-inexistente-" + System.currentTimeMillis() + ".html"))
+                .GET()
+                .build();
+        HttpResponse<Void> resposta = httpClient.send(requisicao, HttpResponse.BodyHandlers.discarding());
+
+        // Entao: o servidor confirma que a rota nao esta disponivel
+        assertEquals(404, resposta.statusCode());
+    }
+
 }
