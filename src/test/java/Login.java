@@ -139,6 +139,24 @@ public class Login {
     }
 
     @Test
+    @DisplayName("CT8 - 404 (Não encontrado)")
+    void deveRetornarNaoEncontradoParaRotaInexistente() throws Exception {
+        // Dado: que o ambiente e uma aplicacao estatica, cujo servidor so publica a pagina de login como recurso real
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        // Quando: e feita uma requisicao para uma rota que nao existe (equivalente a uma falha de
+        // deploy/configuracao que remove um endpoint da versao publicada)
+        HttpRequest requisicao = HttpRequest.newBuilder(
+                        URI.create(BASE_URL + "rota-inexistente-" + System.currentTimeMillis() + ".html"))
+                .GET()
+                .build();
+        HttpResponse<Void> resposta = httpClient.send(requisicao, HttpResponse.BodyHandlers.discarding());
+
+        // Entao: o servidor confirma que a rota nao esta disponivel
+        assertEquals(404, resposta.statusCode());
+    }
+
+    @Test
     @DisplayName("CT6 - 408 Validação de timeout do cliente")
     void deveAutenticarDentroDoLimiteMaximoDeTempo() {
         // Dado: que esteja na página de login
@@ -158,6 +176,39 @@ public class Login {
         // Então: o tempo de resposta deve ser inferior a 10 segundos
         assertTrue(duracaoTotalEmSegundos < 10,
                 "A autenticação excedeu o limite máximo de 10 segundos");
+    }
+
+    @Test
+    @DisplayName("CT9 - 409 (Conflito/Duplicado)")
+    void deveValidarAusenciaDeControleDeSessaoUnicaEmDoisDispositivos() {
+        // Dado: que o usuario ja possui uma sessao ativa em um primeiro dispositivo
+        driver.get(BASE_URL);
+        driver.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
+        driver.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+        driver.findElement(BOTAO_LOGIN).click();
+        wait.until(ExpectedConditions.urlContains("inventory.html"));
+
+        // Quando: o mesmo usuario tenta logar simultaneamente em um segundo dispositivo
+        WebDriver segundoDispositivo = new ChromeDriver();
+        try {
+            WebDriverWait waitSegundoDispositivo = new WebDriverWait(segundoDispositivo, Duration.ofSeconds(10));
+            segundoDispositivo.get(BASE_URL);
+            segundoDispositivo.findElement(CAMPO_USUARIO).sendKeys(USUARIO_VALIDO);
+            segundoDispositivo.findElement(CAMPO_SENHA).sendKeys(SENHA_VALIDA);
+            segundoDispositivo.findElement(BOTAO_LOGIN).click();
+            waitSegundoDispositivo.until(ExpectedConditions.urlContains("inventory.html"));
+
+            // Entao: o saucedemo.com nao implementa politica de sessao unica - o segundo login
+            // tambem e aceito normalmente, evidenciando a ausencia dessa regra de negocio (gap de conformidade)
+            assertEquals(BASE_URL + "inventory.html", segundoDispositivo.getCurrentUrl());
+            assertTrue(segundoDispositivo.findElement(ICONE_CARRINHO).isDisplayed());
+
+            // E: a primeira sessao permanece ativa e funcional, sem qualquer notificacao de conflito
+            driver.navigate().refresh();
+            assertEquals(BASE_URL + "inventory.html", driver.getCurrentUrl());
+        } finally {
+            segundoDispositivo.quit();
+        }
     }
 
     @Test
@@ -187,22 +238,6 @@ public class Login {
         assertEquals(BASE_URL, driver.getCurrentUrl(), "O usuário não deve ser autenticado após múltiplas falhas");
     }
 
-    @Test
-    @DisplayName("CT8 - 404 (Não encontrado)")
-    void deveRetornarNaoEncontradoParaRotaInexistente() throws Exception {
-        // Dado: que o ambiente e uma aplicacao estatica, cujo servidor so publica a pagina de login como recurso real
-        HttpClient httpClient = HttpClient.newHttpClient();
 
-        // Quando: e feita uma requisicao para uma rota que nao existe (equivalente a uma falha de
-        // deploy/configuracao que remove um endpoint da versao publicada)
-        HttpRequest requisicao = HttpRequest.newBuilder(
-                        URI.create(BASE_URL + "rota-inexistente-" + System.currentTimeMillis() + ".html"))
-                .GET()
-                .build();
-        HttpResponse<Void> resposta = httpClient.send(requisicao, HttpResponse.BodyHandlers.discarding());
-
-        // Entao: o servidor confirma que a rota nao esta disponivel
-        assertEquals(404, resposta.statusCode());
-    }
 
 }
